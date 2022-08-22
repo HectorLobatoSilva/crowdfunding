@@ -175,7 +175,7 @@ const App = () => {
                 </form>
                 <button
                     className="button"
-                    style={{ widows: "50%" }}
+                    style={{ width: "50%" }}
                     onClick={getCampaigns}
                 >
                     Fetch campaigns
@@ -197,7 +197,7 @@ const App = () => {
                                         )}`}
                                 </p>
                                 <p>
-                                    <strong>Balance:</strong>
+                                    <strong>Balance: </strong>
                                     {campaign.amountDonated /
                                         web3.LAMPORTS_PER_SOL}
                                 </p>

@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;700&display=swap");
 :root {
     --primary-color: #313e50;
     --secondary-color: #3a435e;
@@ -8,6 +9,7 @@
 body {
     background-color: var(--primary-color);
     color: white;
+    font-family: "Josefin Sans", sans-serif;
 }
 
 .App {
