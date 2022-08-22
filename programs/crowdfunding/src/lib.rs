@@ -5,7 +5,6 @@ declare_id!("5JrijNQ9kvoWnjHqpEcXMm4Nv4ydk7DrH7yKjDNUxYDg");
 
 #[program]
 pub mod crowdfunding {
-
     use super::*;
 
     pub fn create(ctx: Context<Create>, name: String, description: String) -> ProgramResult {
@@ -61,6 +60,7 @@ pub struct Create<'info> {
 
 #[derive(Accounts)]
 pub struct Withdraw<'info> {
+    #[account(mut)]
     pub campaign: Account<'info, Campaign>,
     #[account(mut)]
     pub user: Signer<'info>,
@@ -68,6 +68,7 @@ pub struct Withdraw<'info> {
 
 #[derive(Accounts)]
 pub struct Donate<'info> {
+    #[account(mut)]
     pub campaign: Account<'info, Campaign>,
     #[account(mut)]
     pub user: Signer<'info>,

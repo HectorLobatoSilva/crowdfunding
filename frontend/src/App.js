@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import idl from "./idl.json";
 import { Connection, PublicKey, clusterApiUrl } from "@solana/web3.js";
 import {
@@ -22,6 +22,8 @@ const { SystemProgram } = web3;
 const App = () => {
     const [walletAddress, setWalletAddress] = useState(null);
     const [campaigns, setCampaigns] = useState([]);
+
+    const formEl = useRef(null);
 
     const getProvider = () => {
         const connection = new Connection(network, opts.preflightCommitment);
@@ -76,7 +78,9 @@ const App = () => {
         ).then((campaigns) => setCampaigns(campaigns));
     };
 
-    const createCampaign = async () => {
+    const createCampaign = async (event) => {
+        event.preventDefault();
+        const [name, description] = formEl.current.elements;
         try {
             const provider = getProvider();
             const program = new Program(idl, programID, provider);
@@ -87,7 +91,7 @@ const App = () => {
                 ],
                 program.programId
             );
-            await program.rpc.create("campaign name", "campaign description", {
+            await program.rpc.create(name.value, description.value, {
                 accounts: {
                     campaign,
                     user: provider.wallet.publicKey,
@@ -135,40 +139,96 @@ const App = () => {
     };
 
     const RenderNotConnected = () => {
-        return <button onClick={connectWallet}>Connect to wallet</button>;
+        return (
+            <button className="button connect" onClick={connectWallet}>
+                Connect to wallet
+            </button>
+        );
     };
     const RenderConnected = () => {
         return (
             <>
-                <button onClick={createCampaign}>Create campaign</button>
-                <button onClick={getCampaigns}>Fetch campaigns</button>
-
+                <form
+                    ref={formEl}
+                    className="flex form"
+                    onSubmit={createCampaign}
+                >
+                    <h1>New Campaing</h1>
+                    <label htmlFor="name">Name</label>
+                    <input
+                        id="name"
+                        name="campaing[name]"
+                        className="input"
+                        type="text"
+                        placeholder="Name of campaing"
+                    />
+                    <label htmlFor="description">Description</label>
+                    <textarea
+                        id="description"
+                        name="campaign[description]"
+                        className="input"
+                        placeholder="Description of campaing"
+                    ></textarea>
+                    <button className="button" type="submit">
+                        Create campaign
+                    </button>
+                </form>
+                <button
+                    className="button"
+                    style={{ widows: "50%" }}
+                    onClick={getCampaigns}
+                >
+                    Fetch campaigns
+                </button>
                 {campaigns.length > 0 && <h1>Campaigns</h1>}
-                {campaigns.map((campaign) => (
-                    <div key={campaign.pubkey.toString()}>
-                        <p>
-                            <strong>ID:</strong> {campaign.pubkey.toString()}
-                        </p>
-                        <p>
-                            <strong>Balance:</strong>
-                            {campaign.amountDonated / web3.LAMPORTS_PER_SOL}
-                        </p>
-                        <p>
-                            <strong>Name:</strong>
-                            {campaign.name}
-                        </p>
-                        <p>
-                            <strong>Description:</strong>
-                            {campaign.description}
-                        </p>
-                        <button onClick={() => donate(campaign.pubkey)}>
-                            Donate
-                        </button>
-                        <button onClick={() => withdraw(campaign.pubkey)}>
-                            withdraw
-                        </button>
-                    </div>
-                ))}
+                <div className="campaings-wall">
+                    {campaigns.map((campaign) => (
+                        <div className="card" key={campaign.pubkey.toString()}>
+                            <div>
+                                <p>
+                                    <strong>ID:</strong>{" "}
+                                    {`${campaign.pubkey
+                                        .toString()
+                                        .substring(0, 3)}...${campaign.pubkey
+                                        .toString()
+                                        .substring(
+                                            40,
+                                            campaign.pubkey.toString().length
+                                        )}`}
+                                </p>
+                                <p>
+                                    <strong>Balance:</strong>
+                                    {campaign.amountDonated /
+                                        web3.LAMPORTS_PER_SOL}
+                                </p>
+                                <p>
+                                    <strong>Name:</strong>
+                                    {campaign.name}
+                                </p>
+                                <p>
+                                    <strong>Description:</strong>
+                                    {campaign.description}
+                                </p>
+                                <div className="flex">
+                                    <button
+                                        className="button"
+                                        onClick={() => donate(campaign.pubkey)}
+                                    >
+                                        Donate 0.2 SOL
+                                    </button>
+                                    <button
+                                        className="button"
+                                        onClick={() =>
+                                            withdraw(campaign.pubkey)
+                                        }
+                                    >
+                                        withdraw
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </>
         );
     };

@@ -12,3 +12,6 @@ wallet = "./id.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+
+# pubkey=C7xqQ4dihKu18DcWaGPVYMSfYXeXTJUgNUSacPLJV7tX
+# devnet=5JrijNQ9kvoWnjHqpEcXMm4Nv4ydk7DrH7yKjDNUxYDg
